@@ -19,14 +19,12 @@ public class TestRGS {
 
     @Before
     public void before() {
-//      Для Мас и Linux
-        //       System.setProperty("webdriver.chrome.driver", "src/test/resources/webdriver/chromedriver");
 //      Для Windows
         System.setProperty("webdriver.chrome.driver", "src/test/resources/webdriver/chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().pageLoadTimeout(15, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(8, TimeUnit.SECONDS);
 
         wait = new WebDriverWait(driver, 10, 1000);
 
@@ -35,9 +33,12 @@ public class TestRGS {
     }
 
 
+
+
     @Test
     public void exampleScenario() {
 
+        closeDinamicPopUp();
 
         String cookiesClose = "//div[@class='btn btn-default text-uppercase']";
         WebElement cookiesBtnClose = driver.findElement(By.xpath(cookiesClose));
@@ -134,7 +135,7 @@ public class TestRGS {
         String errorAlertXPath = "//span[text()='Введите адрес электронной почты']";
         WebElement errorAlert = driver.findElement(By.xpath(errorAlertXPath));
         waitUtilElementToBeVisible(errorAlert);
-        Assert.assertEquals("Проверка ошибки у alert на странице не была пройдено",
+        Assert.assertEquals("Проверка ошибки на странице не была пройдено",
                 "Введите адрес электронной почты", errorAlert.getText());
 
 
@@ -144,16 +145,6 @@ public class TestRGS {
     @After
     public void after() {
         driver.quit();
-    }
-
-    /**
-     * Скрол до элемента на js коде
-     *
-     * @param element - веб элемент до которого нужно проскролить
-     */
-    private void scrollToElementJs(WebElement element) {
-        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
-        javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
     /**
@@ -190,7 +181,6 @@ public class TestRGS {
      * @param value   - значение которы мы заполняем веб элемент (поле какое-то)
      */
     private void fillInputField(WebElement element, String value) {
-        scrollToElementJs(element);
         waitUtilElementToBeClickable(element);
         element.click();
         element.clear();
@@ -198,5 +188,20 @@ public class TestRGS {
         boolean checkFlag = wait.until(ExpectedConditions.attributeContains(element, "value", value));
         Assert.assertTrue("Поле было заполнено некорректно", checkFlag);
     }
+
+
+
+    public void closeDinamicPopUp(){
+        driver.manage().timeouts().implicitlyWait(500,TimeUnit.MILLISECONDS);
+        try{
+            WebElement element=driver.findElement(By.xpath("//div[@data-fl-close='1800']"));
+            element.click();
+        }catch (Exception e){
+
+        }finally {
+            driver.manage().timeouts().implicitlyWait(15,TimeUnit.SECONDS);
+        }
+    }
+
 
 }
