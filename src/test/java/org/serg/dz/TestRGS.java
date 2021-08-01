@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.concurrent.TimeUnit;
@@ -33,16 +34,22 @@ public class TestRGS {
     }
 
 
-
     @Test
     public void exampleScenario() {
 
         //закрыть frame
-       driver.switchTo().frame("fl-498072");
-       WebElement frameClose=driver.findElement(By.xpath("//div[@data-fl-close='1800']"));
-       waitUtilElementToBeClickable(frameClose);
-       frameClose.click();
-       driver.switchTo().defaultContent();
+
+        try {
+            driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+            driver.switchTo().frame("fl-498072");
+            WebElement frameClose = driver.findElement(By.xpath("//div[@data-fl-close='1800']"));
+            waitUtilElementToBeClickable(frameClose);
+            frameClose.click();
+            driver.switchTo().defaultContent();
+        } catch (Exception e) {
+
+        }
+
 
         String cookiesClose = "//div[@class='btn btn-default text-uppercase']";
         WebElement cookiesBtnClose = driver.findElement(By.xpath(cookiesClose));
@@ -101,13 +108,16 @@ public class TestRGS {
         WebElement fillInputFieldPhone = driver.findElement(By.xpath("//div/div[5]/input"));
         fillInputFieldPhone.click();
         fillInputFieldPhone.sendKeys("9999999999", Keys.ENTER);
+        
         //Ввод даты
         WebElement fillInputFieldDate = driver.findElement(By.xpath("//input[@name='ContactDate']"));
         fillInputFieldDate.click();
         fillInputFieldDate.sendKeys("19.09.2021", Keys.ENTER);
+
         // выбрать регион
-        WebElement insuranceButtonRegion = driver.findElement(By.xpath("//select/option[2]"));
-        insuranceButtonRegion.click();
+        Select selectRegion=new Select((driver.findElement(By.xpath("//*[@class='row']//select[@name='Region']"))));
+        selectRegion.selectByVisibleText("Москва");
+
         // нажать отправить
         String pressSendXPath = "//button[@id='button-m']";
         WebElement pressSend = driver.findElement(By.xpath(pressSendXPath));
@@ -122,6 +132,8 @@ public class TestRGS {
             Assert.assertEquals("Поле пустое",
                     "Введите Фамилию", lastName.getText());
         } catch (Exception e) {
+        }finally {
+           driver.manage().timeouts().implicitlyWait(15,TimeUnit.SECONDS);
         }
 
         //Имя
