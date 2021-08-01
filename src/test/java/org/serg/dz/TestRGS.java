@@ -34,11 +34,15 @@ public class TestRGS {
 
 
 
-
     @Test
     public void exampleScenario() {
 
-        closeDinamicPopUp();
+        //закрыть frame
+       driver.switchTo().frame("fl-498072");
+       WebElement frameClose=driver.findElement(By.xpath("//div[@data-fl-close='1800']"));
+       waitUtilElementToBeClickable(frameClose);
+       frameClose.click();
+       driver.switchTo().defaultContent();
 
         String cookiesClose = "//div[@class='btn btn-default text-uppercase']";
         WebElement cookiesBtnClose = driver.findElement(By.xpath(cookiesClose));
@@ -190,18 +194,17 @@ public class TestRGS {
     }
 
 
-
-    public void closeDinamicPopUp(){
-        driver.manage().timeouts().implicitlyWait(500,TimeUnit.MILLISECONDS);
-        try{
-            WebElement element=driver.findElement(By.xpath("//div[@data-fl-close='1800']"));
-            element.click();
-        }catch (Exception e){
-
-        }finally {
-            driver.manage().timeouts().implicitlyWait(15,TimeUnit.SECONDS);
-        }
-    }
+//    public void closeDinamicPopUp(){
+//        driver.manage().timeouts().implicitlyWait(500,TimeUnit.MILLISECONDS);
+//        try{
+//            WebElement element=driver.findElement(By.xpath("//div[@data-fl-close='1800']"));
+//            element.click();
+//        }catch (Exception e){
+//
+//        }finally {
+//            driver.manage().timeouts().implicitlyWait(15,TimeUnit.SECONDS);
+//        }
+//    }
 
 
 }
