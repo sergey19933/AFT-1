@@ -25,9 +25,9 @@ public class TestRGS {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().pageLoadTimeout(15, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(8, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-        wait = new WebDriverWait(driver, 10, 1000);
+        wait = new WebDriverWait(driver, 11, 1000);
 
         String baseUrl = "http://www.rgs.ru";
         driver.get(baseUrl);
@@ -37,17 +37,20 @@ public class TestRGS {
     @Test
     public void exampleScenario() {
 
+
         //закрыть frame
 
         try {
-            driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+            driver.manage().timeouts().implicitlyWait(1500, TimeUnit.MILLISECONDS);
+            driver.findElement(By.id("fl-498072"));
             driver.switchTo().frame("fl-498072");
             WebElement frameClose = driver.findElement(By.xpath("//div[@data-fl-close='1800']"));
             waitUtilElementToBeClickable(frameClose);
             frameClose.click();
             driver.switchTo().defaultContent();
-        } catch (Exception e) {
-
+        } catch (NoSuchElementException e) {
+        }finally {
+            driver.manage().timeouts().implicitlyWait(15000, TimeUnit.MILLISECONDS);
         }
 
 
@@ -95,27 +98,30 @@ public class TestRGS {
 
 
         // заполнить поля данными
+
         fillInputField(driver.findElement(By.xpath("//input[@name='LastName']")), "Воробьев");
         fillInputField(driver.findElement(By.xpath("//input[@name='FirstName']")), "Антон");
         fillInputField(driver.findElement(By.xpath("//input[@name='MiddleName']")), "Васильевич");
         fillInputField(driver.findElement(By.xpath("//input[@name='Email']")), "qwertyqwerty");
         fillInputField(driver.findElement(By.xpath("//textarea")), "Какой то коммент");
+
         // нажать чекбокс - Я согласен на обработку
         String checkBoxXPath = "//input[@class='checkbox']";
         WebElement checkBox = driver.findElement(By.xpath(checkBoxXPath));
         checkBox.click();
+
         //Ввод номера телефона
-        WebElement fillInputFieldPhone = driver.findElement(By.xpath("//div/div[5]/input"));
+        WebElement fillInputFieldPhone = driver.findElement(By.xpath("//input[contains(@data-bind,'phone')]"));
         fillInputFieldPhone.click();
         fillInputFieldPhone.sendKeys("9999999999", Keys.ENTER);
-        
+
         //Ввод даты
         WebElement fillInputFieldDate = driver.findElement(By.xpath("//input[@name='ContactDate']"));
         fillInputFieldDate.click();
         fillInputFieldDate.sendKeys("19.09.2021", Keys.ENTER);
 
         // выбрать регион
-        Select selectRegion=new Select((driver.findElement(By.xpath("//*[@class='row']//select[@name='Region']"))));
+        Select selectRegion = new Select((driver.findElement(By.xpath("//*[@class='row']//select[@name='Region']"))));
         selectRegion.selectByVisibleText("Москва");
 
         // нажать отправить
@@ -131,32 +137,25 @@ public class TestRGS {
             waitUtilElementToBeVisible(lastName);
             Assert.assertEquals("Поле пустое",
                     "Введите Фамилию", lastName.getText());
-        } catch (Exception e) {
-        }finally {
-           driver.manage().timeouts().implicitlyWait(15,TimeUnit.SECONDS);
+        } catch (NoSuchElementException e) {
         }
 
-        //Имя
-
+        //Имя проверка
         try {
             WebElement firstName = driver.findElement(By.xpath("//span[text()='Введите Имя']"));
             waitUtilElementToBeVisible(firstName);
             Assert.assertEquals("Поле пустое",
                     "Введите Имя", firstName.getText());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
         }
 
-
         //Проверка введен ли email
-        String errorAlertXPath = "//span[text()='Введите адрес электронной почты']";
+        String errorAlertXPath = "//input[@name='Email']/..//span[@class='validation-error-text']";
         WebElement errorAlert = driver.findElement(By.xpath(errorAlertXPath));
         waitUtilElementToBeVisible(errorAlert);
         Assert.assertEquals("Проверка ошибки на странице не была пройдено",
                 "Введите адрес электронной почты", errorAlert.getText());
-
-
     }
-
 
     @After
     public void after() {
@@ -211,7 +210,7 @@ public class TestRGS {
 //        try{
 //            WebElement element=driver.findElement(By.xpath("//div[@data-fl-close='1800']"));
 //            element.click();
-//        }catch (Exception e){
+//        }catch (NoSuchElementException e){
 //
 //        }finally {
 //            driver.manage().timeouts().implicitlyWait(15,TimeUnit.SECONDS);
